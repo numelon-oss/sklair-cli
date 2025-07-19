@@ -31,6 +31,8 @@ local source = [[
             return 234234 * 348923849723
         </lua>
     </p>
+
+    <officialTrandulet someVar="true" maybe ok alright="32323"></officialTrandulet>
 ]]
 
 local native = {
@@ -80,8 +82,11 @@ for startPos, tag, body, endPos in source:gmatch("()<(%w+)[^/>]*>(.-)</%2>()") d
         type = "full",
         start = startPos,
         stop = endPos,
-        body = source:sub(startPos, endPos)
+        body = source:sub(startPos, endPos),
+        tag = tag -- somehow the tag is actually very accurate
     }
+
+    p("TRAMBILIBIMBOM", tag)
 end
 
 -- self closing tags
@@ -92,7 +97,8 @@ for startPos, tag, endPos in source:gmatch("()<(%w+)[^/>]*/>()") do
         type = "selfclose",
         start = startPos,
         stop = endPos,
-        body = source:sub(startPos, endPos)
+        body = source:sub(startPos, endPos),
+        tag = tag
     }
 end
 
@@ -113,7 +119,8 @@ for startPos, tag, endPos in source:gmatch("()<(%w+)[^/>]*>()") do
             type = "open",
             start = startPos,
             stop = endPos,
-            body = source:sub(startPos, endPos)
+            body = source:sub(startPos, endPos),
+            tag = tag
         }
     end
 end
@@ -142,7 +149,7 @@ local function header(raw)
     raw = raw:sub(x + 1, y - 1) -- chop the rest off, irrelevantt
     -- chop tag into raw pieces, preserving spaces in quotes
     local props = {}
-    local tagName = nil
+    --local tagName = nil
 
     local i = 1
     local len = #raw
@@ -183,7 +190,7 @@ local function header(raw)
 
     if #current > 0 then tokens[#tokens + 1] = current end
 
-    tagName = tokens[1]
+    --tagName = tokens[1]
 
     for i = 2, #tokens do
         local token = tokens[i]
@@ -195,11 +202,12 @@ local function header(raw)
         end
     end
 
-    return tagName, props
+    return --[[tagName, ]] props
 end
 
 local function render(node)
-    local tag, props = header(node.type == "selfclose" and node.body:gsub(" /", ""):gsub("/", "") or node.body)
+    local tag = node.tag
+    local --[[tag, ]] props = header(node.type == "selfclose" and node.body:gsub(" /", ""):gsub("/", "") or node.body)
     if native[tag] then return node.body end
 
     local INNER_PATTERN = "<[^>]+>(.-)</[^>]+>"
