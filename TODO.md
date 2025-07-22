@@ -35,9 +35,5 @@
 </style>
 
 <!-- should place at the VERY END of the body tag -->
-<script>
-    window.addEventListener("load", () => {
-        document.documentElement.style.visibility = "visible";
-    });
-</script>
+<script>window.addEventListener("load", () => document.documentElement.style.visibility = "visible");</script>
 ```
