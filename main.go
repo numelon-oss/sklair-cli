@@ -101,8 +101,17 @@ func main() {
 	}
 
 	newWriter := bytes.NewBuffer(nil)
-	html.Render(newWriter, doc)
+	err = html.Render(newWriter, doc)
+	if err != nil {
+		logger.Error("Could not render output : %s", err.Error())
+		return
+	}
 
-	os.WriteFile("output.html", newWriter.Bytes(), 0644)
+	err = os.WriteFile("output.html", newWriter.Bytes(), 0644)
+	if err != nil {
+		logger.Error("Could not write output : %s", err.Error())
+		return
+	}
+
 	logger.Info("Saved to output.html")
 }

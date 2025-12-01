@@ -1,0 +1,13 @@
+{
+  "preventFOUC": true,
+
+  "input":  "./",
+  "exclude": [
+    "*/.*",
+    "!*/.htaccess"
+  ],
+  "output": "./build",
+
+  "minify": true,
+  "obfuscate": true
+}
