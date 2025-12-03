@@ -1,11 +1,15 @@
 {
-  "preventFOUC": true,
+  "preventFOUC": {
+    "enabled": true,
+    "colour": "#1a1a1a"
+  },
 
   "input":  "./",
   "exclude": [
     "*/.*",
     "!*/.htaccess"
   ],
+  "exclude_compile": ["someBigFile.html"],
   "output": "./build",
 
   "minify": true,

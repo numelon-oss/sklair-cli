@@ -40,3 +40,4 @@
 
 - create a JSON schema for `sklair.json` files:
 - https://json-schema.org/understanding-json-schema/reference/index.html
+- allow components to be FULL html files with a head and body. If it is a full file (as opposed to just a regular component body that is bare), then basically build a "cache" of things from the head that will be inserted into the source document (deduplication) and the rest of the body just gets inserted as usual
