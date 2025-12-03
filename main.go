@@ -13,18 +13,21 @@ import (
 	"golang.org/x/net/html"
 )
 
+const ComponentsDir = "components"
+const SrcDir = "src"
+
 func main() {
 	logger.InitShared(logger.LevelDebug)
 
 	// TODO: add a function to logger which has a cool processing animation or something
 	logger.Info("Discovering documents...")
-	scanned, err := discovery.DocumentDiscovery("src")
+	scanned, err := discovery.DocumentDiscovery(SrcDir)
 	if err != nil {
 		logger.Error("Could not scan documents : %s", err.Error())
 		return
 	}
 	logger.Info("Discovering components...")
-	components, err := discovery.ComponentDiscovery("components")
+	components, err := discovery.ComponentDiscovery(ComponentsDir)
 	if err != nil {
 		logger.Error("Could not scan components : %s", err.Error())
 		return
@@ -65,7 +68,7 @@ func main() {
 						}
 
 						logger.Info("Processing and caching tag %s...", tag)
-						c, dynamic, err := caching.Cache("components", componentSrc)
+						c, dynamic, err := caching.Cache(ComponentsDir, componentSrc)
 						if err != nil {
 							logger.Error("Could not cache component %s : %s", componentSrc, err.Error())
 							return
@@ -87,7 +90,7 @@ func main() {
 
 		for _, node := range toReplace {
 
-			componentPath := filepath.Join("components", node.Data+".html")
+			componentPath := filepath.Join(ComponentsDir, node.Data+".html")
 
 			if _, err := os.Stat(componentPath); err != nil {
 				logger.Error("Could not find component %s : %s", componentPath, err.Error())
