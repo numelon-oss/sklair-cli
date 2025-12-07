@@ -2,8 +2,10 @@ package caching
 
 import (
 	"bytes"
+	"errors"
 	"os"
 	"path/filepath"
+	"sklair/htmlUtilities"
 
 	"golang.org/x/net/html"
 )
@@ -42,55 +44,16 @@ func Cache(source string, fileName string) (*Component, bool, error) {
 	// because x/net/html automatically interprets the file as if its a full browser
 	// ie it adds a doctype, head, body, etc tags automatically even if our input file doesnt have them
 
-	body := component.FirstChild
-	for body != nil && body.Data != "html" {
-		body = body.NextSibling
+	htmlNode := htmlUtilities.FindTag(component, "html")
+	bodyNode := htmlUtilities.FindTag(htmlNode, "body")
+
+	if bodyNode == nil {
+		return nil, false, errors.New("no body tag found in component")
 	}
-	if body != nil {
-		body = body.FirstChild
-		for body != nil && body.Data != "body" {
-			body = body.NextSibling
-		}
-	}
-
-	if (body != nil) && (body.FirstChild != nil) {
-		component = body.FirstChild
-	}
-
-	// old code before refactoring
-	/*
-		component, err := html.Parse(bytes.NewReader(f))
-						if err != nil {
-							logger.Error("Could not parse component %s : %s", componentPath, err.Error())
-							return
-						}
-
-						// even though components are usually bare (without doctype, head, body, etc), we still need to find the "body" (bc parsed)
-						body := component.FirstChild
-						for body != nil && body.Data != "html" {
-							body = body.NextSibling
-						}
-						if body != nil {
-							body = body.FirstChild
-							for body != nil && body.Data != "body" {
-								body = body.NextSibling
-							}
-						}
-
-						if body != nil {
-							parent := node.Parent
-							if parent != nil {
-								for child := body.FirstChild; child != nil; child = child.NextSibling {
-									parent.InsertBefore(htmlUtilities.Clone(child), node)
-								}
-								parent.RemoveChild(node)
-							}
-						}
-	*/
 
 	// TODO: make a new struct for components which includes a head section and a body section
 	// for head, perform deduplication when multiple components in same document share head stuff
 	// for body, just insert as usual
 
-	return &Component{component, hasLua}, hasLua, nil
+	return &Component{bodyNode.FirstChild, hasLua}, hasLua, nil
 }

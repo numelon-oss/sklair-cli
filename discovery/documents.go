@@ -11,6 +11,11 @@ type DocumentLists struct {
 	StaticFiles []string
 }
 
+var skipDirs = map[string]struct{}{
+	"components": {},
+	".git":       {},
+}
+
 func DocumentDiscovery(root string) (*DocumentLists, error) {
 	lists := &DocumentLists{}
 
@@ -19,7 +24,7 @@ func DocumentDiscovery(root string) (*DocumentLists, error) {
 			return err
 		}
 
-		if info.IsDir() && filepath.Base(path) == "components" {
+		if _, ok := skipDirs[filepath.Base(path)]; ok && info.IsDir() {
 			return filepath.SkipDir
 		}
 

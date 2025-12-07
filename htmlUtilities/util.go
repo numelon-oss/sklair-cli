@@ -21,3 +21,17 @@ func Clone(n *html.Node) *html.Node {
 
 	return clown
 }
+
+func FindTag(n *html.Node, tag string) *html.Node {
+	if n.Type == html.ElementNode && n.Data == tag {
+		return n
+	}
+
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		if found := FindTag(c, tag); found != nil {
+			return found
+		}
+	}
+
+	return nil
+}

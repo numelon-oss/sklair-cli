@@ -53,7 +53,7 @@ func main() {
 			return
 		}
 
-		logger.Debug("File %s : %s", filePath, string(content))
+		//logger.Debug("File %s : %s", filePath, string(content))
 
 		doc, err := html.Parse(bytes.NewReader(content))
 		if err != nil {
@@ -151,7 +151,7 @@ func main() {
 		}
 
 		logger.Info("Saved to %s", outPath)
-		logger.Debug("Output : %s", string(newWriter.Bytes()))
+		//logger.Debug("Output : %s", string(newWriter.Bytes()))
 	}
 
 	logger.Info("Finished in %s", time.Since(start))
