@@ -55,5 +55,7 @@ func Cache(source string, fileName string) (*Component, bool, error) {
 	// for head, perform deduplication when multiple components in same document share head stuff
 	// for body, just insert as usual
 
+	// TODO: in the future, cannot just do component.FirstChild because we will eventually want EVERYTHING from the body
+	// not just the first child
 	return &Component{bodyNode.FirstChild, hasLua}, hasLua, nil
 }
