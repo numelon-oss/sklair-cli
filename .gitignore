@@ -5,6 +5,7 @@ sklair.log
 
 build
 src/build
+**.zip
 
 # macOS Files
 **._*
