@@ -39,7 +39,8 @@ func main() {
 
 	// TODO: add a function to logger which has a cool processing animation or something
 	logger.Info("Discovering documents...")
-	scanned, err := discovery.DocumentDiscovery(inputPath)
+	excludes := append(config.Exclude, config.Components, config.Output)
+	scanned, err := discovery.DocumentDiscovery(inputPath, excludes)
 	if err != nil {
 		logger.Error("Could not scan documents : %s", err.Error())
 		return

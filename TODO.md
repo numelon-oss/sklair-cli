@@ -1,8 +1,5 @@
 # Todo list
 
-- define whatever this is, is this a framework or a templating engine?
-- fs.statSync(componentsDir): if folder then expect body.html, optional head.html, body.start.html, body.end.html idk. if file then treat as normal
-
 ## todo list transferred from `numelon-proprietary/website` repo
 
 - create numelon web packing tool for creating websites
@@ -23,22 +20,8 @@
 
 - support for replacing $$COMPONENT_BODY inside of javascript too, since its only supported in html right now with `<!-- $$COMPONENT_BODY -->`
 
-- integrate this into the web packing tool:
-
-```html
-<!-- should automatically place at the VERY START of the head tag -->
-<style>
-    html {
-        visibility: hidden;
-        background: #1e1e1e;
-    }
-</style>
-
-<!-- should place at the VERY END of the body tag -->
-<script>window.addEventListener("load", () => document.documentElement.style.visibility = "visible");</script>
-```
-
 - create a JSON schema for `sklair.json` files:
-- https://json-schema.org/understanding-json-schema/reference/index.html
+- <https://json-schema.org/understanding-json-schema/reference/index.html>
 - note that any file paths like `input` and `output` are RELATIVE to the sklair.json file
 - allow components to be FULL html files with a head and body. If it is a full file (as opposed to just a regular component body that is bare), then basically build a "cache" of things from the head that will be inserted into the source document (deduplication) and the rest of the body just gets inserted as usual
+- create separate timers for actually processing the files - ie file discovery, then compiling. then separate timer for copying static files since that heavily inflates the build time.
