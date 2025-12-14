@@ -11,6 +11,7 @@ import (
 	"sklair/htmlUtilities"
 	"sklair/logger"
 	"sklair/sklairConfig"
+	"sklair/snippets"
 	"strings"
 	"time"
 
@@ -20,7 +21,7 @@ import (
 func main() {
 	logger.InitShared(logger.LevelDebug)
 
-	configPath := flag.String("config", "sklair.json", "Path to the sklair.json config file")
+	configPath := flag.String("config", "src/sklair.json", "Path to the sklair.json config file")
 	flag.Parse()
 
 	config, err := sklairConfig.Load(*configPath)
@@ -56,6 +57,16 @@ func main() {
 	componentCache := caching.ComponentCache{
 		Static:  make(map[string]*caching.Component),
 		Dynamic: make(map[string]*caching.Component),
+	}
+
+	var preventFoucHead *html.Node
+	var preventFoucBody *html.Node
+	if config.PreventFOUC.Enabled {
+		preventFoucHead, preventFoucBody, err = snippets.GetFOUCNodes(config.PreventFOUC.Colour)
+		if err != nil {
+			logger.Error("Could not get PreventFOUC nodes : %s", err.Error())
+			return
+		}
 	}
 
 	for _, filePath := range scanned.HtmlFiles {
@@ -137,6 +148,18 @@ func main() {
 			} else {
 				logger.Info("Component %s not in cache, assuming JS tag and skipping...", node.Data)
 				continue
+			}
+		}
+
+		if config.PreventFOUC.Enabled {
+			head := htmlUtilities.FindTag(doc, "head")
+			body := htmlUtilities.FindTag(doc, "body")
+
+			if head != nil && body != nil {
+				head.InsertBefore(htmlUtilities.Clone(preventFoucHead), head.FirstChild)
+				body.AppendChild(htmlUtilities.Clone(preventFoucBody))
+			} else {
+				logger.Warning("Could not find head or body tags, skipping PreventFOUC for %s", filePath)
 			}
 		}
 
