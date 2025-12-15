@@ -51,3 +51,4 @@
   - also add --silent flag to suppress all output except errors, perfect for ci/cd (todo: github actions for numelon (bespoke) websites) - PRIORITY: this is actually required in the short term!!!
 - search for "TODO" in the entire project and attempt to fix all of those
 - ensure that in main.go the default sklair.json fallnback is NOT src/sklair.json but rather just sklair.json. or just test both?
+- long term: allow sklair to integrate third party stuff like tailwind compilation: sklair scans html, sees which classes are used, compiles css. likewise also scans css for tailwind class usage and adds them to css just in case, so that its also programmable.
