@@ -49,3 +49,5 @@
   - improve CLI UX. perhaps at some point think of replacing our fancy "logs" (glorified prints) with a spinner animation and progress bar. spinner for doc/static discovery, then progress bar for compilign and copying static files etc.
   - then only finally print new empty line and then print build time stats etc (summary)
   - also add --silent flag to suppress all output except errors, perfect for ci/cd (todo: github actions for numelon (bespoke) websites) - PRIORITY: this is actually required in the short term!!!
+- search for "TODO" in the entire project and attempt to fix all of those
+- ensure that in main.go the default sklair.json fallnback is NOT src/sklair.json but rather just sklair.json. or just test both?

@@ -1,7 +1,7 @@
 {
 	"preventFOUC": {
 		"enabled": true,
-		"colour": "#1a1a1a"
+		"colour": "#24100a"
 	},
 
 	"input": "./",
