@@ -10,7 +10,7 @@ type preventFOUC struct {
 	Colour  string `json:"colour,omitempty"`
 }
 
-type SklairConfig struct {
+type ProjectConfig struct {
 	PreventFOUC preventFOUC `json:"preventFOUC,omitempty"`
 
 	Input      string   `json:"input,omitempty"`
@@ -24,7 +24,7 @@ type SklairConfig struct {
 	Obfuscate bool `json:"obfuscate,omitempty"`
 }
 
-var defaultConfig = SklairConfig{
+var defaultConfig = ProjectConfig{
 	PreventFOUC: preventFOUC{
 		Enabled: false,
 	},
@@ -36,7 +36,7 @@ var defaultConfig = SklairConfig{
 	// TODO: likely rename "Obfuscate" to "ObfuscateJS" and make it another struct with more properties and customisation
 }
 
-func Load(path string) (*SklairConfig, error) {
+func Load(path string) (*ProjectConfig, error) {
 	file, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err

@@ -25,3 +25,27 @@
 - note that any file paths like `input` and `output` are RELATIVE to the sklair.json file
 - allow components to be FULL html files with a head and body. If it is a full file (as opposed to just a regular component body that is bare), then basically build a "cache" of things from the head that will be inserted into the source document (deduplication) and the rest of the body just gets inserted as usual
 - create separate timers for actually processing the files - ie file discovery, then compiling. then separate timer for copying static files since that heavily inflates the build time.
+
+## todo december 2025
+- prepare for distribution to:
+  - homebrew
+  - winget
+  - apt (self hosted repo, because debian sponsorship is too slow)
+  - regular github releases -> links on website (although discourage using github releases, make users use homebrew, winget, apt)
+  - installation instructions on website very nice
+- make sklair actually more of a cli tool
+  - think in terms of subcommands:
+    - `sklair init` -> creates a sklair.json file in the current directory and answer a questionnaire
+    - `sklair build` -> builds the website based on sklair.json file or default values (if no sklair.json then warn about defaults available on docs)
+    - `sklair serve` -> starts a local dev server, watching for changes and auto rebuild also ensure that its not actually built EVERY time theres a change
+    - `sklair clean` -> removes all build artifacts (build dir, static dir)
+    - `sklair version` -> prints the current version of sklair (TODO: strict semantic versioning!!)
+    - `sklair --help` or `sklair help` -> gives help
+    - `sklair update` -> updates sklair to latest version (ALSO: ensure that on every run of sklair, it notifies the user of a new version unless auto update check is disabled in sklair config)
+    - `sklair docs` -> opens sklair docs in browser
+    - `sklair config` -> opens sklair config file in default editor. sklair config file should be in HOME/.sklair.config.json
+    - to make sklair more maintainable as a CLI tool with subcommands, take application commands base from CommandRegistry in other numelon-proprietary projects
+      - adapt it for use with cli, each subcommand is registered etc just like in CommandRegistry
+  - improve CLI UX. perhaps at some point think of replacing our fancy "logs" (glorified prints) with a spinner animation and progress bar. spinner for doc/static discovery, then progress bar for compilign and copying static files etc.
+  - then only finally print new empty line and then print build time stats etc (summary)
+  - also add --silent flag to suppress all output except errors, perfect for ci/cd (todo: github actions for numelon (bespoke) websites) - PRIORITY: this is actually required in the short term!!!

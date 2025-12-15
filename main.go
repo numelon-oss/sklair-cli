@@ -156,8 +156,8 @@ func main() {
 			}
 		}
 
+		head := htmlUtilities.FindTag(doc, "head")
 		if config.PreventFOUC.Enabled {
-			head := htmlUtilities.FindTag(doc, "head")
 			body := htmlUtilities.FindTag(doc, "body")
 
 			if head != nil && body != nil {
@@ -166,6 +166,11 @@ func main() {
 			} else {
 				logger.Warning("Could not find head or body tags, skipping PreventFOUC for %s", filePath)
 			}
+		}
+
+		// TODO: remove this in the future or add an option in sklair.json to disable it
+		if head != nil {
+			head.AppendChild(htmlUtilities.Clone(snippets.Generator))
 		}
 
 		newWriter := bytes.NewBuffer(nil)
@@ -224,7 +229,10 @@ func main() {
 	}
 
 	logger.EmptyLine()
-	logger.Info("Compilation time : %s", processingEnd)
+	logger.Info("Compilation time (including writes) : %s", processingEnd)
 	logger.Info("Static copy time : %s", time.Since(staticStart))
 	logger.Info("Total processing time : %s", time.Since(start))
+
+	// TODO: instead of a plain logger, add a progress circle or something so that CLI is interactive
+	// keep the plain logger approach (inside the logger lib - idk somehow?) for github runner (plain) mode, etc
 }
