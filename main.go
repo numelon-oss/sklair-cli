@@ -18,8 +18,30 @@ import (
 	"golang.org/x/net/html"
 )
 
-func main() {
-	logger.InitShared(logger.LevelDebug)
+func run() int {
+	silent := flag.Bool("silent", false, "Suppress all output except errors")
+	verbose := flag.Bool("verbose", false, "Enable verbose output")
+	debug := flag.Bool("debug", false, "Enable debug output")
+
+	flag.Parse()
+
+	level := logger.LevelWarning // default is warnings and errors
+
+	switch {
+	case *silent:
+		level = logger.LevelError
+	case *verbose:
+		level = logger.LevelInfo
+	case *debug:
+		level = logger.LevelDebug
+	}
+
+	if *silent && (*verbose || *debug) {
+		logger.Error("Cannot use -silent and -verbose or -debug at the same time")
+		return 2
+	}
+
+	logger.InitShared(level)
 
 	configPath := flag.String("config", "src/sklair.json", "Path to the sklair.json config file")
 	flag.Parse()
@@ -27,7 +49,7 @@ func main() {
 	config, err := sklairConfig.Load(*configPath)
 	if err != nil {
 		logger.Error("Could not load sklair.json : %s", err.Error())
-		return
+		return 1
 	}
 
 	start := time.Now()
@@ -43,14 +65,14 @@ func main() {
 	scanned, err := discovery.DocumentDiscovery(inputPath, excludes)
 	if err != nil {
 		logger.Error("Could not scan documents : %s", err.Error())
-		return
+		return 1
 	}
 
 	logger.Info("Indexing components...")
 	components, err := discovery.ComponentDiscovery(componentsPath)
 	if err != nil {
 		logger.Error("Could not scan components : %s", err.Error())
-		return
+		return 1
 	}
 
 	componentCache := caching.ComponentCache{
@@ -64,7 +86,7 @@ func main() {
 		preventFoucHead, preventFoucBody, err = snippets.GetFOUCNodes(config.PreventFOUC.Colour)
 		if err != nil {
 			logger.Error("Could not get PreventFOUC nodes : %s", err.Error())
-			return
+			return 1
 		}
 	}
 
@@ -73,7 +95,7 @@ func main() {
 		content, err := os.ReadFile(filePath)
 		if err != nil {
 			logger.Error("Could not read file %s : %s", filePath, err.Error())
-			return
+			return 1
 		}
 
 		//logger.Debug("File %s : %s", filePath, string(content))
@@ -81,7 +103,7 @@ func main() {
 		doc, err := html.Parse(bytes.NewReader(content))
 		if err != nil {
 			logger.Error("Could not parse file %s : %s", filePath, err.Error())
-			return
+			return 1
 		}
 
 		var toReplace []*html.Node
@@ -105,7 +127,7 @@ func main() {
 						cached, err := caching.Cache(componentsPath, componentSrc)
 						if err != nil {
 							logger.Error("Could not cache component %s : %s", componentSrc, err.Error())
-							return
+							return 1
 						}
 
 						if cached.Dynamic {
@@ -195,13 +217,13 @@ func main() {
 		err = html.Render(newWriter, doc)
 		if err != nil {
 			logger.Error("Could not render output : %s", err.Error())
-			return
+			return 1
 		}
 
 		relPath, err := filepath.Rel(inputPath, filePath)
 		if err != nil {
 			logger.Error("Could not get relative path : %s", err.Error())
-			return
+			return 1
 		}
 
 		outPath := filepath.Join(outputPath, relPath)
@@ -210,7 +232,7 @@ func main() {
 		err = os.WriteFile(outPath, newWriter.Bytes(), 0644)
 		if err != nil {
 			logger.Error("Could not write output : %s", err.Error())
-			return
+			return 1
 		}
 
 		logger.Info("Saved to %s", outPath)
@@ -225,7 +247,7 @@ func main() {
 		relPath, err := filepath.Rel(inputPath, filePath)
 		if err != nil {
 			logger.Error("Could not get relative path for %s : %s", filePath, err.Error())
-			return
+			return 1
 		}
 
 		outPath := filepath.Join(outputPath, relPath)
@@ -234,13 +256,13 @@ func main() {
 		data, err := os.ReadFile(filePath)
 		if err != nil {
 			logger.Error("Could not read static file %s : %s", filePath, err.Error())
-			return
+			return 1
 		}
 
 		err = os.WriteFile(outPath, data, 0644)
 		if err != nil {
 			logger.Error("Could not write static file %s : %s", filePath, err.Error())
-			return
+			return 1
 		}
 
 		logger.Info("Copied static file to %s", outPath)
@@ -254,4 +276,10 @@ func main() {
 	// TODO: instead of a plain logger, add a progress circle or something so that CLI is interactive
 	// keep the plain logger approach (inside the logger lib - idk somehow?) for github runner (plain) mode, etc
 	// ci/cd mode should be enabled on --silent flag
+
+	return 0
+}
+
+func main() {
+	os.Exit(run())
 }
