@@ -30,9 +30,7 @@ func run() int {
 		return 0
 	}
 
-	// TODO: ensure that help also shows the silent, verbose, debug flags
-	// replace flag libs -help and --help with our own help command
-
+	// wrong usage
 	if err := global.Parse(os.Args[1:]); err != nil {
 		return 2
 	}
@@ -48,6 +46,15 @@ func run() int {
 		level = logger.LevelError
 	case *debug:
 		level = logger.LevelDebug
+
+		// --------------------------------------------------
+		// TODO: this is temporary!!
+		exePath, err := os.Executable()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(exePath)
+	// --------------------------------------------------
 	case *verbose:
 		level = logger.LevelInfo
 	}

@@ -53,7 +53,7 @@
   - this is INCREDIBLY useful for analytics snippets, since we dont want the final head optimisation pass to mess up the order when it matters
   - so basically some head nodes become grouped per se
 
-
+- extend CommandRegistry to allow per-subcommand help, also maybe fix per command flag parsing when required
 
 ## more todo (a bit long-term?)
 
@@ -64,7 +64,7 @@ build optimisations:
 - automatic resource discovery (eg external scripts, fonts, images) across documents and components (detect in final output)
 - preconnect and dns-prefetch insertion (automatically after scanning source documents and components) - based on discovered external domains (eg fonts.googleapis.com), automatically insert optimised `<link rel="preconnect">` and `<link rel="dns-prefetch">` tags near the TOP of head
   - preconnect and dns prefetch must be inserted in the order that their respective domains are in the actual document. always head preconnect and dns prefetch first. but then after all that, if there is an image first at top of body from somecdn.com, then somecdn.com should be first preconnect and dns prefetch
-- heuristic based ordering of head tags for ideal performance
+- heuristic-based ordering of head tags for ideal performance
     1. charset
     2. preventFOUC
     3. preconnect/dns prefetch
@@ -82,3 +82,6 @@ build optimisations:
 - how does sklair work? (maintainability doc)
 - how to use sklair in github workflows (how to deploy to github pages)
 - how to make a sklair website
+
+## for much later
+- at some very late point, go through the entire project to see where we ARENT using pointers etc (avoid copying!!) and fix that

@@ -48,6 +48,12 @@ func InsertNodesBefore(insertBefore *html.Node, tags []*html.Node) {
 	}
 }
 
+func AppendNodes(parent *html.Node, tags []*html.Node) {
+	for _, tag := range tags {
+		parent.AppendChild(Clone(tag))
+	}
+}
+
 func GetAllChildren(n *html.Node) []*html.Node {
 	var children []*html.Node
 	for child := n.FirstChild; child != nil; child = child.NextSibling {
@@ -57,11 +63,11 @@ func GetAllChildren(n *html.Node) []*html.Node {
 	return children
 }
 
-var dedupeSeed = maphash.MakeSeed()
+var seedOfInnovation = maphash.MakeSeed()
 
 func superweakHash(s string) uint64 {
 	var h maphash.Hash
-	h.SetSeed(dedupeSeed)
+	h.SetSeed(seedOfInnovation)
 	_, _ = h.WriteString(s)
 	return h.Sum64()
 }

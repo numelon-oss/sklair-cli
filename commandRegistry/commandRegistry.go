@@ -46,7 +46,13 @@ func (r *CommandRegistry) Get(name string) (*Command, bool) {
 
 func (r *CommandRegistry) PrintHelp() {
 	fmt.Println("Usage:")
-	fmt.Println("	sklair <command> [args]")
+	fmt.Println("\tsklair [verbosity flags] <command> [arguments]")
+	fmt.Println()
+	fmt.Println("Available verbosity flags:") // TODO: instead of just putting all the verbosity flags here, maybe add them to the registry somehow?
+	fmt.Println("\t--silent: Suppress all output except errors")
+	fmt.Println("\t--verbose: Enable verbose output")
+	fmt.Println("\t--debug: Enable debug output")
+	fmt.Println()
 	fmt.Println()
 	fmt.Println("Available commands:")
 
@@ -57,6 +63,8 @@ func (r *CommandRegistry) PrintHelp() {
 		}
 		seen[cmd] = true
 
-		fmt.Printf("  %-12s %s\n", cmd.Name, cmd.Description)
+		fmt.Printf("\t%-12s %s\n", cmd.Name, cmd.Description)
 	}
+	//fmt.Println()
+	//fmt.Println("\tUse 'sklair help <command>' to get help for a specific command.") // TODO: todo!!
 }

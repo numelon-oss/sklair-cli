@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sklair/building"
 	"sklair/caching"
 	"sklair/commandRegistry"
 	"sklair/discovery"
@@ -18,21 +19,27 @@ import (
 	"golang.org/x/net/html"
 )
 
+func resolveConfigPath() string {
+	if _, err := os.Stat("sklair.json"); err == nil {
+		return "sklair.json"
+	}
+
+	if _, err := os.Stat("src/sklair.json"); err == nil {
+		return "src/sklair.json"
+	}
+
+	return "sklair.json" // default, just so that error messages are still meaningful
+}
+
 func init() {
 	commandRegistry.Registry.Register(&commandRegistry.Command{
 		Name:        "build",
 		Description: "Builds a Sklair project",
 		Aliases:     []string{"b"},
 		Run: func(args []string) int {
-			//configPath := flag.String("config", "src/sklair.json", "Path to the sklair.json config file")
-			//flag.Parse()
-			// TODO: fix per command flag parsing etc!
-			// just extend commandregistry
-			// allow per-subcommand help
-			_config := "src/sklair.json"
-			configPath := &_config
+			configPath := resolveConfigPath()
 
-			config, err := sklairConfig.LoadProject(*configPath)
+			config, err := sklairConfig.LoadProject(configPath)
 			if err != nil {
 				logger.Error("Could not load sklair.json : %s", err.Error())
 				return 1
@@ -40,7 +47,7 @@ func init() {
 
 			start := time.Now()
 
-			configDir := filepath.Dir(*configPath)
+			configDir := filepath.Dir(configPath)
 			inputPath := filepath.Join(configDir, config.Input)
 			componentsPath := filepath.Join(configDir, config.Components)
 			outputPath := filepath.Join(configDir, config.Output)
@@ -48,14 +55,14 @@ func init() {
 			// TODO: add a function to logger which has a cool processing animation or something
 			logger.Info("Indexing documents...")
 			excludes := append(config.Exclude, config.Components, config.Output)
-			scanned, err := discovery.DocumentDiscovery(inputPath, excludes)
+			scanned, err := discovery.DiscoverDocuments(inputPath, excludes)
 			if err != nil {
 				logger.Error("Could not scan documents : %s", err.Error())
 				return 1
 			}
 
 			logger.Info("Indexing components...")
-			components, err := discovery.ComponentDiscovery(componentsPath)
+			components, err := discovery.DiscoverComponents(componentsPath)
 			if err != nil {
 				logger.Error("Could not scan components : %s", err.Error())
 				return 1
@@ -136,46 +143,34 @@ func init() {
 
 				head := htmlUtilities.FindTag(doc, "head")
 
-				seenComponents := make(map[string]struct{})
-				seenHead := make(map[uint64]struct{})
+				// usedComponents ensures that each component contributes its <head> nodes at most ONCE per document,
+				// even if the component appears multiple times in the source document
+				usedComponents := make(map[string]struct{})
+				// seenHead, on the other hand, is used for actual deduplication
 				for _, originalTag := range toReplace {
 					stcComponent, staticExists := componentCache.Static[originalTag.Data]
 					dynComponent, dynamicExists := componentCache.Dynamic[originalTag.Data]
 
 					parent := originalTag.Parent
 					if parent == nil {
-						logger.Error("Somehow the parent does not exist for %s. (memory corruption???)")
+						logger.Error("Somehow the parent does not exist for %s. (memory corruption???)", originalTag.Data)
 						return 1
 					}
 
 					//fmt.Println(originalTag.Data)
 
-					// TODO: the logic for static and dynnamic components will likely be very similar
+					// TODO: the logic for static and dynamic components will likely be very similar
 					// in the future, simply combine both branches,
 					// but for dynamic components just have a simple processing stage.
 					// after that its treated as a static component would be
 					if staticExists {
-						// TODO: this might be the issue
 						htmlUtilities.InsertNodesBefore(originalTag, stcComponent.BodyNodes)
 
-						if _, seen := seenComponents[originalTag.Data]; !seen && head != nil {
-							// deduplication of head nodes happens here!
-							// TODO: move deduplication to the final pass where we will optimise the head anyways
-							for _, child := range stcComponent.HeadNodes {
-								key := htmlUtilities.WeakHashNode(child)
-								//fmt.Println(key)
-								if key == 0 {
-									continue
-								}
-
-								if _, seen := seenHead[key]; seen {
-									continue
-								}
-								seenHead[key] = struct{}{}
-								head.AppendChild(htmlUtilities.Clone(child))
-							}
+						// this check ensures that each component contributes its <head> nodes at most ONCE per document
+						if _, seen := usedComponents[originalTag.Data]; !seen && head != nil {
+							htmlUtilities.AppendNodes(head, stcComponent.HeadNodes)
 						}
-						seenComponents[originalTag.Data] = struct{}{}
+						usedComponents[originalTag.Data] = struct{}{}
 						parent.RemoveChild(originalTag)
 					} else if dynamicExists {
 						fmt.Println(dynComponent)
@@ -209,9 +204,10 @@ func init() {
 					}
 				}
 
-				// TODO: remove this in the future or add an option in sklair.json to disable it
 				if head != nil {
+					// TODO: remove this (generator) in the future or add an option in sklair.json to disable it
 					head.AppendChild(htmlUtilities.Clone(snippets.Generator))
+					building.OptimiseHead(head)
 				}
 
 				newWriter := bytes.NewBuffer(nil)

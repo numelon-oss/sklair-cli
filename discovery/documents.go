@@ -64,7 +64,7 @@ func isExcluded(rel string, excludes []string, includes []string) bool {
 	return false
 }
 
-func DocumentDiscovery(root string, excludes []string) (*DocumentLists, error) {
+func DiscoverDocuments(root string, excludes []string) (*DocumentLists, error) {
 	lists := &DocumentLists{}
 
 	excludes = append(defaultExcludes, excludes...)
