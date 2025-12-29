@@ -5,6 +5,7 @@ import (
 	"os"
 	"sklair/cliutil"
 	"sklair/commandRegistry"
+	"sklair/sklairConfig"
 )
 
 func init() {
@@ -12,7 +13,7 @@ func init() {
 		Name:        "config",
 		Description: "Opens the global Sklair configuration file in your editor",
 		Run: func(args []string) int {
-			path, err := cliutil.GlobalConfigPath()
+			path, err := sklairConfig.GlobalConfigPath()
 			if err != nil {
 				_, _ = fmt.Fprintln(os.Stderr, err)
 				return 1

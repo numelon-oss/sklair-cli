@@ -3,7 +3,6 @@ package cliutil
 import (
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 )
 
@@ -23,12 +22,13 @@ func OpenBrowser(url string) error {
 }
 
 func OpenEditor(path string) error {
-	editor := os.Getenv("EDITOR")
+	editor := os.Getenv("VISUAL")
 	if editor == "" {
-		editor = os.Getenv("VISUAL")
+		editor = os.Getenv("EDITOR")
 	}
 	if editor == "" {
 		editor = "nano" // this is just going to be catastrophic on windows, but honestly, who cares about that platform
+		// yes I prefer nano over vi/vim even if its unconventional for cli apps to use nano
 	}
 
 	cmd := exec.Command(editor, path)
@@ -37,13 +37,4 @@ func OpenEditor(path string) error {
 	cmd.Stderr = os.Stderr
 
 	return cmd.Run()
-}
-
-func GlobalConfigPath() (string, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(home, ".sklair.config.json"), nil
 }

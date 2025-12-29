@@ -3,6 +3,7 @@ package sklairConfig
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 )
 
 // TODO: expand this struct when JS obfuscation is added
@@ -60,16 +61,30 @@ var DefaultConfig = ProjectConfig{
 	//},
 }
 
-func LoadProject(path string) (*ProjectConfig, error) {
-	file, err := os.ReadFile(path)
+func resolveProjectConfigPath() string {
+	if _, err := os.Stat("sklair.json"); err == nil {
+		return "sklair.json"
+	}
+
+	if _, err := os.Stat("src/sklair.json"); err == nil {
+		return "src/sklair.json"
+	}
+
+	return "sklair.json" // default
+}
+
+func LoadProjectConfig() (*ProjectConfig, string, error) {
+	configPath := resolveProjectConfigPath()
+
+	file, err := os.ReadFile(configPath)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	config := DefaultConfig
 	if err := json.Unmarshal(file, &config); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	return &config, nil
+	return &config, filepath.Dir(configPath), nil
 }

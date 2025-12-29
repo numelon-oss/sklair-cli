@@ -1,13 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="sklair config" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="sklair --debug serve" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="sklair-cli" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="config" />
+    <parameters value="--debug serve" />
     <kind value="PACKAGE" />
     <package value="sklair" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />
-    <pty_enabled value="true" />
     <method v="2" />
   </configuration>
 </component>

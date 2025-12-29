@@ -75,5 +75,7 @@ func run() int {
 		return 2
 	}
 
+	// TODO: set up the sklair dir inside the users home directory here along with the default app config
+
 	return cmd.Run(args[1:])
 }
