@@ -29,6 +29,11 @@ func Build(config *sklairConfig.ProjectConfig, configDir string, outputDirOverri
 		outputDir = filepath.Join(configDir, config.Output)
 	}
 
+	err := os.RemoveAll(outputDir)
+	if err != nil {
+		return fmt.Errorf("could not remove output directory %s : %s", outputDir, err.Error())
+	}
+
 	start := time.Now()
 
 	logger.Info("Indexing documents...")
