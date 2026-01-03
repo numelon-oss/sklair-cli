@@ -22,6 +22,8 @@ type PreventFOUC struct {
 //}
 
 type ProjectConfig struct {
+	Hooks string `json:"hooks,omitempty"`
+
 	Input      string `json:"input,omitempty"`
 	Components string `json:"components,omitempty"`
 
@@ -38,6 +40,8 @@ type ProjectConfig struct {
 }
 
 var DefaultConfig = ProjectConfig{
+	Hooks: "", // disabled by default
+
 	Input:      "./",
 	Components: "./components",
 

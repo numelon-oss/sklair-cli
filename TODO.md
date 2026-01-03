@@ -48,7 +48,6 @@
   - at that rate, after compiling create a _sklair directory in the build folder where all component files live in and in the final html, component dependencies are referenced from there
     - for example lets say that in component.html you reference ./someStyle.css as a stylesheet. regularly just by current component logic, someStyle.css wont be found because it is inside the components folder which doesnt get copied on build, and, either way even if it was copied then the reference would still be wrong because we use ./component.css in index.html but the actual file is in ./components/component.css. therefore sklair must be aware of this
 
-
 - allow parsing comments inside of components which allows you to tell sklair to PRESERVE the order of nodes inside head
   - this is INCREDIBLY useful for analytics snippets, since we dont want the final head optimisation pass to mess up the order when it matters
   - so basically some head nodes become grouped per se
@@ -57,10 +56,7 @@
 
 - in the future, all errors and warnings will have a link to the sklair documentation for more information
 
-
 - when compiling 404.html/.shtml files, warn about relative links breaking (eg when a user visits /a/b/c/notfound instead of /notfound) - so always anchor to root OR give full paths to assets
-
-
 
 - create an icon component, similar to the opengraph one
 
@@ -93,4 +89,5 @@ build optimisations:
 - how to make a sklair website
 
 ## for much later
-- at some very late point, go through the entire project to see where we ARENT using pointers etc (avoid copying!!) and fix that
+
+<!-- - at some very late point, go through the entire project to see where we ARENT using pointers etc (avoid copying!!) and fix that -->

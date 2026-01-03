@@ -13,8 +13,8 @@ DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 go build \
   -ldflags "\
-    -X sklair/version.Version=$VERSION \
-    -X sklair/version.Commit=$COMMIT \
-    -X sklair/version.BuildDate=$DATE \
+    -X sklair/constants.Version=$VERSION \
+    -X sklair/constants.Commit=$COMMIT \
+    -X sklair/constants.BuildDate=$DATE \
   "
 */
