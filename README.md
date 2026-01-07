@@ -14,7 +14,7 @@
 It takes real HTML files, reusable components, a few compiler directives and pre/post-build hooks written in Lua, and produces better HTML than a human could realistically maintain by hand.
 
 <p>
-<a href="https://sklair.numelon.com">
+<a href="https://sklair.numelon.com" style="text-decoration:none;">
   <img alt="Website" height="40" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/website_vector.svg">
 </a>
 <!-- &nbsp;
@@ -22,7 +22,7 @@ It takes real HTML files, reusable components, a few compiler directives and pre
   <img alt="Read the documentation" height="40" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/readthedocs_vector.svg">
 </a> -->
 &nbsp;
-<a href="https://sklair.numelon.com">
+<a href="https://github.com/sponsors/numelon-oss" style="text-decoration:none;">
   <img alt="GitHub Sponsors" height="40" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/donate/ghsponsors-plural_vector.svg">
 </a>
 </p>
